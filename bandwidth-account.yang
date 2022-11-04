@@ -1,0 +1,60 @@
+/*
+Optional yang package to view peak BW utilized every month
+*/
+module bandwidth-account {
+	namespace "http://bandwidth-usage";
+	prefix "bandwidth-account";
+	import junos-extension {
+		prefix junos;
+	}
+	import junos-extension-odl {
+		prefix junos-odl;
+	}
+	organization "Juniper Networks";
+	contact "Aravind Prabhakar";
+	description "yang model to view bandwidth accounted 
+		    for every month";
+	revision "2022-11-03" {
+		description "Version 1.0";
+	}
+	rpc get-bandwidth-account {
+		description "display peak BW utilized over the month";
+		junos:command "show bandwidth-account" {
+			junos:action-execute {
+				junos:script "bw_account_action.py";
+			}
+		}
+		input {
+			leaf month {
+				type string;
+				description "3 letter month format. eg jan,feb.. ";
+			}
+			leaf year {
+				type string;
+				description "4 digit year representation";
+			}
+		}
+		output {
+			container bw-account {
+				leaf time {
+					type string;
+				}
+				leaf peak-bps {
+					type string;
+				}
+			}
+			junos-odl:format discovered-format {
+		junos-odl:picture '
+	time	: @<<<
+	peak-bps: @<<<';
+			junos-odl:line {
+				junos-odl:field "time";
+			}
+			junos-odl:line {
+				junos-odl:field "peak-bps";
+			}
+			junos-odl:blank-line;
+			}
+		}
+	}
+}
