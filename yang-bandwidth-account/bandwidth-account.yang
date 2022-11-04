@@ -2,7 +2,7 @@
 Optional yang package to view peak BW utilized every month
 */
 module bandwidth-account {
-	namespace "http://bandwidth-usage";
+	namespace "http://bandwidth-account";
 	prefix "bandwidth-account";
 	import junos-extension {
 		prefix junos;
@@ -18,7 +18,7 @@ module bandwidth-account {
 		description "Version 1.0";
 	}
 	rpc get-bandwidth-account {
-		description "display peak BW utilized over the month";
+		description "rpc to display peak BW utilized over the month";
 		junos:command "show bandwidth-account" {
 			junos:action-execute {
 				junos:script "bw_account_action.py";
@@ -42,18 +42,20 @@ module bandwidth-account {
 				leaf peak-bps {
 					type string;
 				}
-			}
-			junos-odl:format discovered-format {
-		junos-odl:picture '
-	time	: @<<<
-	peak-bps: @<<<';
-			junos-odl:line {
-				junos-odl:field "time";
-			}
-			junos-odl:line {
-				junos-odl:field "peak-bps";
-			}
-			junos-odl:blank-line;
+				container bandwidth-account-format {
+			 		junos-odl:cli-format;
+					junos-odl:header "Bandwidth accounting information\n";
+					junos-odl:picture '
+				time		: @<<<<<<<<<<<<<<<<<
+				peak-bps	: @<<<<<<<<<<<<<<<<<';
+				junos-odl:line {
+					junos-odl:field "time";
+				}	
+				junos-odl:line {
+					junos-odl:field "peak-bps";
+				}
+				junos-odl:blank-line;
+				}
 			}
 		}
 	}

@@ -3,9 +3,10 @@ import json
 import argparse
 
 def generate_xml(args):
-    if (args.rpc_name == "bandwidth-account"):
-        with open("/var/log/peak_{}_{}.json".format(args.year, args.month) as f:
-            fdata = json.loads(f)
+    if (args.rpc_name == "get-bandwidth-account"):
+        print(args)
+        with open("/var/log/peak_{}_{}.json".format(args.year, args.month)) as f:
+            fdata = json.load(f)
             XML = '''
                <bw-account>
                <time>{0}</time>
@@ -22,8 +23,7 @@ def main():
     args = parser.parse_args()
 
     rpc_output_xml = generate_xml(args)
-    for xml_val in rpc_output_xml:
-        print(xml_val)
+    print(rpc_output_xml)
 
 if __name__ == "__main__":
     main()
