@@ -20,7 +20,7 @@ set system services netconf ssh
 
 set event-options generate-event every-1-min time-interval 60
 set event-options policy check-heartbeat events every-1-min
-set event-options policy check-heartbeat then event-script bw_account.py
+set event-options policy check-heartbeat then event-script bw_account.py arguments i "ge-0/0/0.0 ge-0/0/1.0"
 set event-options event-script file bw_account.py
 ```
 
