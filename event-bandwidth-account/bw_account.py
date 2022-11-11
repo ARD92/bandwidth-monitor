@@ -24,7 +24,12 @@ import json
 import datetime
 import os
 
-HOST = '192.167.1.4' 
+parser = argparse.ArgumentParser()
+#parser.add_argument("-i", action='store', dest='INTF', nargs='+', help='interfaces to monitor. Separate interfaces with a whitespace')
+parser.add_argument("-i", action='store', dest='INTF', help='interfaces to monitor. Separate interfaces with a whitespace')
+args = parser.parse_args()
+
+HOST = '192.167.1.3' 
 USER = 'root'
 PASSWD = 'juniper123'
 STATS = {}
@@ -84,28 +89,38 @@ def main():
     dev = Device(host=HOST,user=USER,passwd=PASSWD)
     dopen = Devopen(dev)
     
-    # gather time
     STATS["time"] = datetime.datetime.now().isoformat()
-
+    BPS = 0
+    ISTATS = {}
+    INTF_STATS = []
     # gather bw stats
-    opintf = dev.rpc.get_interface_information(interface_name='ge-0/0/0.0', detail=True)
-    for stats in opintf.xpath('.//input-bps'):
-        STATS["BPS"] = stats.text.strip("\n")
-        fr = open(FILE_PATH, 'r')
-        val = fr.read()
-        fr.close()
+    IMON = args.INTF.split(" ")
+    for numintf in IMON:
+        opintf = dev.rpc.get_interface_information(interface_name=numintf, detail=True)
+        for stats in opintf.xpath('.//input-bps'):
+            ISTATS["BPS"] = stats.text.strip("\n")
+            BPS = BPS + int(ISTATS["BPS"])
+            ISTATS["INTF"] = numintf
+            INTF_STATS.append(ISTATS)
+            ISTATS = {}
+    STATS["DETAIL"] = INTF_STATS
+    STATS["BPS"] = BPS
+    #print(STATS)
 
-        if val == "":
-            cval = 0
-        else:
-            jload = json.loads(val)
-            cval = int(jload["BPS"])
+    fr = open(FILE_PATH, 'r')
+    val = fr.read()
+    fr.close()
 
-        if int(STATS["BPS"]) > cval:
-            print("Value greater than previous peak at time {}.. saving log..\n".format(STATS["time"]))
-            with open(FILE_PATH, 'w') as fw:
-                fw.write(json.dumps(STATS, indent=4))
+    if val == "":
+        cval = 0
+    else:
+        jload = json.loads(val)
+        cval = int(jload["BPS"])
 
+    if int(STATS["BPS"]) > cval:
+        print("Value greater than previous peak at time {}.. saving..\n".format(STATS["time"]))
+        with open(FILE_PATH, 'w') as fw:
+            fw.write(json.dumps(STATS, indent=4))
 
 if __name__ == "__main__":
     main()

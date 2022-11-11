@@ -33,26 +33,44 @@ module bandwidth-account {
 				type string;
 				description "4 digit year representation";
 			}
+			leaf detail {
+				type empty;
+				description "detailed view of bps across all monitored interfaces";
+			}
 		}
 		output {
 			container bw-account {
 				leaf time {
 					type string;
 				}
+				leaf interface {
+					type string;
+				}
 				leaf peak-bps {
+					type string;
+				}
+				leaf intf-peak-bps {
 					type string;
 				}
 				container bandwidth-account-format {
 			 		junos-odl:cli-format;
 					junos-odl:header "Bandwidth accounting information\n";
 					junos-odl:picture '
-				time		: @<<<<<<<<<<<<<<<<<
-				peak-bps	: @<<<<<<<<<<<<<<<<<';
+	time	      : @<<<<<<<<<<<<<<<<<<<<<<<
+	interface     : @<<<<<<<<<<<<<<<<<<<<<<<
+	peak-bps      : @<<<<<<<<<<<<<<<<<<<<<<<
+	intf-peak-bps : @<<<<<<<<<<<<<<<<<<<<<<<';
 				junos-odl:line {
 					junos-odl:field "time";
 				}	
 				junos-odl:line {
+					junos-odl:field "interface";
+				}
+				junos-odl:line {
 					junos-odl:field "peak-bps";
+				}
+				junos-odl:line {
+					junos-odl:field "intf-peak-bps";
 				}
 				junos-odl:blank-line;
 				}

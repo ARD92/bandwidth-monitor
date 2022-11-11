@@ -15,6 +15,9 @@ Run script every 1 min. This gives same functionality as a cronjob. Similarly yo
 Can be a vSRX/MX/SRX etc 
 
 ```
+set system scripts language python3
+set system services netconf ssh
+
 set event-options generate-event every-1-min time-interval 60
 set event-options policy check-heartbeat events every-1-min
 set event-options policy check-heartbeat then event-script bw_account.py
@@ -31,7 +34,7 @@ Copy the python script/app under the below directory to ensure it works as expec
 Once data has been generated a file would be created as below for every month in a year
 The below is ingress BPS. File would be created upon executing the event script. 
 ```
-root@vsrx> show log peak_2022_nov.json
+root@vmx3> show log peak_2022_nov.json
 {
     "time": "2022-11-04T03:52:33.113325",
     "BPS": "84000"
@@ -63,7 +66,7 @@ Copy the files from the director `yang-bandwidth-account` to the DUT under direc
 Login to the node and execute the below command to install the package
 
 ```
-root@vsrx> request system yang add package bandwidth-account module [/tmp/bandwidth-account.yang /tmp/junos-extension-odl.yang /tmp/junos-extension.yang] action-script /tmp/bw_account_action.py
+root@vmx3> request system yang add package bandwidth-account module [/tmp/bandwidth-account.yang /tmp/junos-extension-odl.yang /tmp/junos-extension.yang] action-script /tmp/bw_account_action.py
 ```
 
 Once the above is installed you will notice the installation is successful
@@ -87,9 +90,10 @@ Restarting cli ...
 
 ##### Possible completions
 ```
-root@vsrx> show bandwidth-account ?
+root@vmx3> show bandwidth-account ?
 Possible completions:
   <[Enter]>            Execute this command
+  detail               detailed view of bps across all monitored interfaces
   month                3 letter month format. eg jan,feb..
   year                 4 digit year representation
   |                    Pipe through a command
@@ -100,9 +104,23 @@ Possible completions:
 This shows the peak-bps during the month was noticed at given time.
 
 ```
-root@vsrx> show bandwidth-account year 2022 month nov
+root@vmx3> show bandwidth-account month nov year 2022
 Bandwidth accounting information
-				time		: 2022-11-04T13:06:03.585731
-				peak-bps	: 113952
+	time	      : 2022-11-11T12:06:00.711660
+	peak-bps      : 63400
 ```
 
+Detailed view
+
+```
+root@vmx3> show bandwidth-account month nov year 2022 detail
+Bandwidth accounting information
+	time	      : 2022-11-11T12:06:00.711660
+	interface     : ge-0/0/0.0
+	intf-peak-bps : 32600
+
+	time	      : 2022-11-11T12:06:00.711660
+	interface     : ge-0/0/1.0
+	intf-peak-bps : 30800
+
+```
