@@ -1,6 +1,9 @@
 /*
-Optional yang package to view peak BW utilized every month
+Version: V1.0
+Date: 2022-11-03
+Description: Optional yang package to view peak BW utilized every month
 */
+
 module bandwidth-account {
 	namespace "http://bandwidth-account";
 	prefix "bandwidth-account";

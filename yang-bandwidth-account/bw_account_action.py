@@ -1,3 +1,7 @@
+# Version: V1.0
+# Date: 2022-11-03
+# Description: Action script for the yang package to view peak bandwidth utilization for a given month/year
+
 import os
 import json
 import argparse
